@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title></title>
+    <link>http://localhost:4000</link>
+    <description>
+      The homepage for Mila's Math Bootcamp
+    </description>
+    
+        
+            <item>
+                <title>The Derivative</title>
+                <link>http://localhost:4000/machinelearning/basics/2019/07/23/the-derivative/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <blockquote>
+  <p>“Whatcha doing George?” “Oh nothing Lenny, just working out some gradients.” “On paper? I’m not sure if you’ll be able to call <code class="highlighter-rouge">loss.backward()</code> there.</p>
+</blockquote>
+
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/machinelearning/basics/2019/07/23/the-derivative/</guid>
+                <description>
+                    
+                    Learn about derivatives and gradients.
+                    
+                </description>
+                <pubDate>Tue, 23 Jul 2019 08:22:18 -0400</pubDate>
+                <author>Bhairav Mehta</author>
+            </item>
+        
+    
+  </channel>
+</rss>

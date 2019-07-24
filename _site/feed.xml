@@ -16,6 +16,8 @@
 
 &lt;p&gt;Machine learning, especially deep learning, is built almost entirely on differentiation. In this post, we will briefly describe differentiation, derivatives, and gradients. From there, we will continue on to discuss their connection to the underlying core idea behind many popular deep learning frameworks: automatic differentiation.&lt;/p&gt;
 
+&lt;p&gt;&amp;lt;a href=&quot;https://colab.research.google.com/drive/1pD4Lnr1Gs8S3KiUT86D1zZzpWlHOBWRQ” target=&quot;_parent&quot;&amp;gt;&amp;lt;img src=&quot;https://colab.research.google.com/assets/colab-badge.svg&quot; alt=&quot;Open In Colab&quot;/&amp;gt;&amp;lt;/a&amp;gt;&lt;/p&gt;
+
 &lt;h2 id=&quot;derivatives&quot;&gt;Derivatives&lt;/h2&gt;
 
 &lt;p&gt;While derivatives can be explained and generalized to quite &lt;a href=&quot;#TODO&quot;&gt;a&lt;/a&gt; &lt;a href=&quot;#TODO&quot;&gt;few&lt;/a&gt; &lt;a href=&quot;#TODO&quot;&gt;domains&lt;/a&gt;, we will start with the most elementary formulation: in the case of a function of a single, real-valued variable.&lt;/p&gt;

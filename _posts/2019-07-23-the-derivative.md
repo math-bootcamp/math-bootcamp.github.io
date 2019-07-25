@@ -20,7 +20,7 @@ While derivatives can be explained and generalized to quite [a](#TODO) [few](#TO
 
 Concretely, a derivative in this setting measures sensitivity of change of the output with respect to its input: graphically in one dimension, this is the slope of the tangent line at $$f(x)$$; in physics, we often hear that the rate of change in position (output) with respect to time (input) is _velocity_, and similarly for velocity and acceleration.
 
-![TODO - Links need to be fixed][../images/the-derivative/sincos.gif]
+![](/images/the-derivative/sincos.gif)
 
 Derivatives can be generalized to both higher orders and higher dimensions. Higher orders of derivatives are just differentiating with respect to the input once again; for example, the second order derivative of position with respect to time brings us back to acceleration.
 

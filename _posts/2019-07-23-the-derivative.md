@@ -48,7 +48,7 @@ $$ f'(a) = \lim_{h\rightarrow 0} \frac{f(a + h) - f(a)}{h} $$
 
 However, since limits are a theoretical tool, they offer us no help in the calculation of gradients in practice.
 
-Numerically, we can replace the infinitetesimal $$h$$ with an arbitrarily small one, leading us to approximate the derivative as:
+Numerically, we can replace the infinitesimal $$h$$ with an arbitrarily small one, leading us to approximate the derivative as:
 
 $$ f'(a) \approx \lim_{h\rightarrow 0} \frac{f(a + h) - f(a)}{h} $$
 
@@ -68,3 +68,39 @@ A section on how simple arithmetic operations and simple functions can be compos
 
 ### Forward Mode and Backward Mode
  
+ 
+### Linear Regression from an AD Perspective
+ 
+Recall the matrix equation for linear regression, where $$\mathbf{X}: \mathbb{R}^{m \times n}$$ and $$\mathbf{\Theta}: \mathbb{R}^{n \times 1}$$:
+ 
+$$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \mathbf{X}\mathbf{\Theta}$$
+ 
+Imagine we are given a training set $$\mathbf{X} = \{\mathbf{x}^{(0)}, \ldots, \mathbf{x}^{(n)}\}, \mathbf{Y} = \{\mathbf{y}^{(0)}, \ldots, \mathbf{y}^{(n)}\}$$. Our goal in OLS linear regression is to solve the following optimization problem:
+
+$$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}||\mathbf{Y} - \mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta})||^2$$
+
+Assuming $$\mathbf{X}^\intercal\mathbf{X}$$ is invertible, this can be solved directly, using the normal equation:
+
+$$\mathbf{\Theta}^* = (\mathbf{X}^\intercal\mathbf{X})^{-1}\mathbf{X}^\intercal\mathbf{Y}$$
+
+However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge. Another solution is to use the gradient:
+
+$$\nabla_\mathbf{\Theta} ||\mathbf{Y} - \mathbf{X}\mathbf{\Theta}||^2$$
+
+First, let us consider the scalar case, where $$f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
+
+$$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2$$
+
+We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are two ways to do this, using the finite difference method, and using automatic differentiation. Let's see the finite difference method with centered differences:
+
+$$\frac{\partial\mathcal{L}}{\partial \theta_0} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 + h) x_i + \theta_1))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 - h) x_i + \theta_1))^2}{2h}$$
+
+$$\frac{\partial\mathcal{L}}{\partial \theta_1} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 + h))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 - h))^2}{2h}$$
+
+Alternatively, we can calculate the partials analytically, using the chain rule:
+
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-x_i)\end{align}$$
+
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1)\end{align}$$
+
+TODO: Expand on AD graph

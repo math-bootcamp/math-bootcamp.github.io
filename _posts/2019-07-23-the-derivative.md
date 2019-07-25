@@ -101,6 +101,6 @@ Alternatively, we can calculate the partials analytically, using the chain rule:
 
 $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-x_i)\end{align}$$
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1)\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1)\end{align}$$
 
 TODO: Expand on AD graph

@@ -83,9 +83,9 @@ Assuming $$\mathbf{X}^\intercal\mathbf{X}$$ is invertible, this can be solved di
 
 $$\mathbf{\Theta}^* = (\mathbf{X}^\intercal\mathbf{X})^{-1}\mathbf{X}^\intercal\mathbf{Y}$$
 
-However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge. Another solution is to use the gradient:
+However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge. Another solution is to use gradient descent, by repeating the following procedure until convergence:
 
-$$\nabla_\mathbf{\Theta} ||\mathbf{Y} - \mathbf{X}\mathbf{\Theta}||^2$$
+$$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_\mathbf{\Theta} ||\mathbf{Y} - \mathbf{X}\mathbf{\Theta}||^2$$
 
 First, let us consider the scalar case, where $$f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
 

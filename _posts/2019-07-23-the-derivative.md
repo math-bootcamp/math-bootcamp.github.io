@@ -75,46 +75,52 @@ Recall the matrix equation for linear regression, where $$\mathbf{X}: \mathbb{R}
  
 $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \mathbf{X}\mathbf{\Theta}$$
  
-Imagine we are given a training set $$\mathbf{X} = \{\mathbf{x}^{(0)}, \ldots, \mathbf{x}^{(n)}\}, \mathbf{Y} = \{\mathbf{y}^{(0)}, \ldots, \mathbf{y}^{(n)}\}$$. Our goal in OLS linear regression is to solve the following optimization problem:
+Imagine we are given a training set $$\mathbf{X} = \{\mathbf{x}_0, \ldots, \mathbf{x}_m\}, \mathbf{Y} = \{\mathbf{y}_0, \ldots, \mathbf{y}_m\}$$. Our goal in OLS linear regression is to solve the following optimization problem:
 
 $$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}||\mathbf{Y} - \mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta})||^2$$
 
 First, we consider the scalar case $$\hat f: \mathbb{R} \times \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$$, where $$\hat f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
 
-$$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2$$
+$$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2$$
 
-We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) the finite difference method, and (2) symbolic differentiation. First, let's see the finite difference method with centered differences:
+We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) [the finite difference method](https://en.wikipedia.org/wiki/Finite_difference), and (2) symbolic differentiation. First, let's see the finite difference method with centered differences:
 
-$$\frac{\partial\mathcal{L}}{\partial \theta_0} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 + h) x_i + \theta_1))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 - h) x_i + \theta_1))^2}{2h}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left((\theta_0 + h) x_i + \theta_1\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\left(\theta_0 + h\right) x_i + \theta_1\right)\right)^2 - \left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2 \\\\ \frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2\end{align}$$
 
-$$\frac{\partial\mathcal{L}}{\partial \theta_1} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 + h))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 - h))^2}{2h}$$
+Using [computer](https://www.wolframalpha.com/input/?i=(y_i-((%CE%B8_0%2Bh)x_i%2B%CE%B8_1))%5E2-(y_i-((%CE%B8_0-h)x_i%2B%CE%B8_1))%5E2) [algebra](https://www.wolframalpha.com/input/?i=(y_i-(%CE%B8_0*x_i%2B%CE%B8_1%2Bh))%5E2%E2%88%92(y_i-(%CE%B8_0*x_i%2B%CE%B8_1-h))%5E2), these equations can be simplified considerably:
+
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4hx_i (\theta_0 x_i + \theta_1 - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i + \theta_1 - y_i)} \\\\ \frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4h ( \theta_1 +  \theta_0 x_i - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m\left(\theta_1 +  \theta_0 x_i - y_i\right)} \end{align}$$
 
 Alternatively, we can calculate the partials analytically, by applying the chain rule:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{n}\sum_{i=0}^n 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i x_i + \theta_0 x_i^2 + \theta_1 x_i)\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i^2 + \theta_1 x_i - y_i)}\end{align}$$
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{n}\sum_{i=0}^n 2 (y_i - (\theta_0 x_i + \theta_1))\frac{\partial}{\partial \theta_1}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1) \\\\ & = \frac{2}{n}\sum_{i=0}^n(-y_i + \theta_0 x_i + \theta_1)\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2 (y_i - (\theta_0 x_i + \theta_1))\frac{\partial}{\partial \theta_1}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-1) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(\theta_0 x_i + \theta_1 - y_i)}\end{align}$$
 
-<!--This tells us:
+Notice how this gives us the same answer as the finite difference method (this is not by accident). We can rewrite our solution in gradient form, i.e. as a vector of partials:
  
-$$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{2}{n}\sum_{i=0}^n(y_i x_i + \theta_0 x_i^2 + \theta_1 x_i), \frac{2}{n}\sum_{i=0}^n(-y_i + \theta_0 x_i + \theta_1) \rbrack$$-->
+$$\nabla_\mathbf{\Theta}\mathcal{L} = \frac{2}{m} \left\lbrack \sum_{i=0}^m(x_i)(y_i  + \theta_0 x_i + \theta_1), \sum_{i=0}^m(\theta_0 x_i + \theta_1 - y_i) \right\rbrack$$
  
-Let us now consider the general form of $$\mathcal L(\mathbf{\Theta})$$:
+Having reviewed the scalar procedure for linear regression, let us now return to the general form of $$\mathcal L(\mathbf{\Theta})$$. Matrix notation allows us to simplify the loss considerably:
 
-$$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{n} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{n} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{n} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
+$$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
 
-Now we can derive the gradient with respect to $$\mathbf \Theta$$:
+We can derive the gradient of the loss with respect to $$\mathbf \Theta$$ like so:
 
-$$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{n} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{n} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ & = \frac{2}{n} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)\end{align}$$
+$$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{m} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ & = \frac{2}{m} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)\end{align}$$
 
-Setting this equal to zero, we can solve for minimum directly:
+For a review of matrix calculus, Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] are both excellent resources. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
 
 $$\begin{align}0 & = \mathbf X^\intercal \mathbf X \mathbf \Theta - \mathbf X ^ \intercal \mathbf Y \\\\ \mathbf \Theta &= (\mathbf X^\intercal \mathbf X)^{-1}\mathbf X^\intercal\mathbf Y \end{align}$$
 
-However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is at least $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge, i.e. quadratic with respect to the number of features. Another solution is to use gradient descent, by repeating the following procedure until convergence:
+However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is at least $$\mathcal{O}(n^{2.373})$$[^1] to the best of our knowledge, i.e. quadratic with respect to the number of input dimensions. Another way to find $$\mathbf \Theta^*$$ is by repeating the following procedure until convergence:
 
 $$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta})$$
 
-For some small number $$\alpha$$.
+Typically, $$\alpha \in [0.001, 0.1]$$. Although hyperparameter tuning is required to find a suitable $$\alpha$$ (various improvements like [Nesterov momentum](http://mitliagkas.github.io/ift6085/ift-6085-lecture-6-notes.pdf) and [quasi-Newton methods](https://en.wikipedia.org/wiki/Quasi-Newton_method) also help to accelerate convergence), this procedure is guaranteed to be computationally more efficient than matrix inversion for sufficiently large $$m$$ and $$n$$. In practice, the normal equation is seldom used unless $$m$$ is very small.
 
 TODO: Expand on AD graph
+
+[^1]: [Coppersmith–Winograd algorithm](https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm)  
+[^2]: [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
+[^3]: [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/index.html)

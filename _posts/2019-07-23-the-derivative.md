@@ -79,28 +79,42 @@ Imagine we are given a training set $$\mathbf{X} = \{\mathbf{x}^{(0)}, \ldots, \
 
 $$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}||\mathbf{Y} - \mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta})||^2$$
 
-Assuming $$\mathbf{X}^\intercal\mathbf{X}$$ is invertible, this can be solved directly, using the normal equation:
-
-$$\mathbf{\Theta}^* = (\mathbf{X}^\intercal\mathbf{X})^{-1}\mathbf{X}^\intercal\mathbf{Y}$$
-
-However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge. Another solution is to use gradient descent, by repeating the following procedure until convergence:
-
-$$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_\mathbf{\Theta} ||\mathbf{Y} - \mathbf{X}\mathbf{\Theta}||^2$$
-
-First, let us consider the scalar case, where $$f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
+First, we consider the scalar case $$\hat f: \mathbb{R} \times \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$$, where $$\hat f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
 
 $$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2$$
 
-We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are two ways to do this, using the finite difference method, and using automatic differentiation. Let's see the finite difference method with centered differences:
+We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) the finite difference method, and (2) symbolic differentiation. First, let's see the finite difference method with centered differences:
 
 $$\frac{\partial\mathcal{L}}{\partial \theta_0} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 + h) x_i + \theta_1))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - ((\theta_0 - h) x_i + \theta_1))^2}{2h}$$
 
 $$\frac{\partial\mathcal{L}}{\partial \theta_1} = \frac{\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 + h))^2 - \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1 - h))^2}{2h}$$
 
-Alternatively, we can calculate the partials analytically, using the chain rule:
+Alternatively, we can calculate the partials analytically, by applying the chain rule:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-x_i)\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{n}\sum_{i=0}^n 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i x_i + \theta_0 x_i^2 + \theta_1 x_i)\end{align}$$
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1)\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{n}\sum_{i=0}^n 2 (y_i - (\theta_0 x_i + \theta_1))\frac{\partial}{\partial \theta_1}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{n}\sum_{i=0}^n(y_i - (\theta_0 x_i + \theta_1))(-1) \\\\ & = \frac{2}{n}\sum_{i=0}^n(-y_i + \theta_0 x_i + \theta_1)\end{align}$$
+
+<!--This tells us:
+ 
+$$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{2}{n}\sum_{i=0}^n(y_i x_i + \theta_0 x_i^2 + \theta_1 x_i), \frac{2}{n}\sum_{i=0}^n(-y_i + \theta_0 x_i + \theta_1) \rbrack$$-->
+ 
+Let us now consider the general form of $$\mathcal L(\mathbf{\Theta})$$:
+
+$$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{n} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{n} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{n} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
+
+Now we can derive the gradient with respect to $$\mathbf \Theta$$:
+
+$$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{n} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{n} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ & = \frac{2}{n} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)\end{align}$$
+
+Setting this equal to zero, we can solve for minimum directly:
+
+$$\begin{align}0 & = \mathbf X^\intercal \mathbf X \mathbf \Theta - \mathbf X ^ \intercal \mathbf Y \\\\ \mathbf \Theta &= (\mathbf X^\intercal \mathbf X)^{-1}\mathbf X^\intercal\mathbf Y \end{align}$$
+
+However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is at least $$\mathcal{O}(m^{2.373})$$ to the best of our knowledge, i.e. quadratic with respect to the number of features. Another solution is to use gradient descent, by repeating the following procedure until convergence:
+
+$$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta})$$
+
+For some small number $$\alpha$$.
 
 TODO: Expand on AD graph

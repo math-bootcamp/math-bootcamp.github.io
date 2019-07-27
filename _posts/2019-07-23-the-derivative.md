@@ -80,7 +80,7 @@ Imagine we are given the following dataset:
 $$
 \mathbf{X} = 
 \begin{bmatrix}
-\mathbf{x}_0 \\
+\mathbf{x}_1 \\
 \vdots \\
 \mathbf{x}_m
 \end{bmatrix} =
@@ -91,7 +91,7 @@ $$
 \end{pmatrix}, 
 \mathbf{Y} = 
 \begin{bmatrix}
-y_0 \\
+y_1 \\
 \vdots \\
 y_m
 \end{bmatrix}$$
@@ -102,33 +102,48 @@ $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta}) = ||\mathbf{Y} - \mathbf{
 
 $$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$
 
-First, we consider the scalar case, where $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \hat f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$. Since $$\mathbf{X}, \mathbf{Y}$$ are considered to be fixed, we can rewrite $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$ as simply:
+First, we consider the scalar case, where $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \hat f(x; \theta_1, \theta_0) = \theta_1 x + \theta_0$$. Since $$\mathbf{X}, \mathbf{Y}$$ are considered to be fixed, we can rewrite $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$ as simply:
 
-$$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2$$
+$$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_1, \theta_0) = \frac{1}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))^2$$
 
-To find the minimizer of $$\mathcal{L}(\mathbf{\Theta})$$, we need $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) [the finite difference method](https://en.wikipedia.org/wiki/Finite_difference) (FDM), and (2) symbolic differentiation. First, let's see FDM with centered differences:
+To find the minimizer of $$\mathcal{L}(\mathbf{\Theta})$$, we need $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_1}, \frac{\partial\mathcal{L}}{\partial \theta_0}\rbrack$$. There are various ways to compute this, of which we consider two: (1) [the finite difference method](https://en.wikipedia.org/wiki/Finite_difference) (FDM), and (2) symbolic differentiation. First, let's see FDM with centered differences:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left((\theta_0 + h) x_i + \theta_1\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\left(\theta_0 + h\right) x_i + \theta_1\right)\right)^2 - \left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2 \\\\ \frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2\end{align}$$
+$$\begin{align}
+\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left(\theta_1 x_i + \theta_0 + h\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\theta_1 x_i + \theta_0 - h\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\theta_1 x_i + \theta_0 + h\right)\right)^2 - \left(y_i - \left(\theta_1 x_i + \theta_0 - h\right)\right)^2 \\\\ 
+\frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left((\theta_1 + h) x_i + \theta_0\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\left(\theta_1 - h\right) x_i + \theta_0\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\left(\theta_1 + h\right) x_i + \theta_0\right)\right)^2 - \left(y_i - \left(\left(\theta_1 - h\right) x_i + \theta_0\right)\right)^2
+\end{align}$$
 
-Using [computer](https://www.wolframalpha.com/input/?i=(y_i-((%CE%B8_0%2Bh)x_i%2B%CE%B8_1))%5E2-(y_i-((%CE%B8_0-h)x_i%2B%CE%B8_1))%5E2) [algebra](https://www.wolframalpha.com/input/?i=(y_i-(%CE%B8_0*x_i%2B%CE%B8_1%2Bh))%5E2%E2%88%92(y_i-(%CE%B8_0*x_i%2B%CE%B8_1-h))%5E2), these equations can be simplified considerably:
+Using [computer](https://www.wolframalpha.com/input/?i=(y_i-((%CE%B8_1%2Bh)x_i%2B%CE%B8_0))%5E2-(y_i-((%CE%B8_1-h)x_i%2B%CE%B8_0))%5E2) [algebra](https://www.wolframalpha.com/input/?i=(y_i-(%CE%B8_1*x_i%2B%CE%B8_0%2Bh))%5E2%E2%88%92(y_i-(%CE%B8_1*x_i%2B%CE%B8_0-h))%5E2), these equations can be simplified considerably:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4hx_i (\theta_0 x_i + \theta_1 - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i + \theta_1 - y_i)} \\\\ \frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4h ( \theta_1 +  \theta_0 x_i - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m\left(\theta_1 +  \theta_0 x_i - y_i\right)} \end{align}$$
+$$\begin{align}
+\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4h ( \theta_0 +  \theta_1 x_i - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m\left(\theta_0 +  \theta_1 x_i - y_i\right)} \\\\
+\frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(4hx_i (\theta_1 x_i + \theta_0 - y_i)\right) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_1 x_i + \theta_0 - y_i)}
+\end{align}$$
 
 Alternatively, we can calculate the partials analytically, by applying the chain rule:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i + \theta_1 - y_i)}\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2 (y_i - (\theta_1 x_i + \theta_0))\frac{\partial}{\partial \theta_0}(y_i - (\theta_1 x_i + \theta_0)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))(-1) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(\theta_1 x_i + \theta_0 - y_i)}\end{align}$$
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2 (y_i - (\theta_0 x_i + \theta_1))\frac{\partial}{\partial \theta_1}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-1) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(\theta_0 x_i + \theta_1 - y_i)}\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_1 x_i + \theta_0)) \frac{\partial}{\partial \theta_1}(y_i - (\theta_1 x_i + \theta_0)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_1 x_i + \theta_0 - y_i)}\end{align}$$
 
-Notice how this gives us the same answer as the finite difference method (this is not by accident). We can rewrite our solution in gradient form, i.e. as a vector of partials:
+Notice how analytical differentiation gives us the same answer as the finite difference method (this is not by accident), with much less algebra. We can rewrite this gradient form, i.e. as a column vector of partials:
  
-$$\nabla_\mathbf{\Theta}\mathcal{L} = \frac{2}{m} \left\lbrack \sum_{i=0}^m(x_i)(y_i  + \theta_0 x_i + \theta_1), \sum_{i=0}^m(\theta_0 x_i + \theta_1 - y_i) \right\rbrack$$
+$$
+\nabla_\mathbf{\Theta}\mathcal{L} =
+\begin{bmatrix}
+     \frac{\partial\mathcal{L}}{\partial \theta_0} \\
+     \frac{\partial\mathcal{L}}{\partial \theta_1}
+ \end{bmatrix} = \frac{2}{m} 
+\begin{bmatrix}
+\sum_{i=0}^m(x_i)(\theta_1 x_i + \theta_0 - y_i) \\\\ \sum_{i=0}^m(\theta_1 x_i + \theta_0 - y_i) 
+\end{bmatrix}
+$$
  
 Having reviewed the scalar procedure for linear regression, let us now return to the general form of $$\mathcal L(\mathbf{\Theta})$$. Matrix notation allows us to simplify the loss considerably:
 
 $$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
 
-Matrix notation allows us to derive the gradient without as much tedious algebra:
+Matrix notation allows us to derive the gradient and requires far less algebra:
 
 $$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{m} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ \nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \boxed{\frac{2}{m} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)}\end{align}$$
 
@@ -183,8 +198,8 @@ $$
    \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{Y}}\right) \\\\
 & = \boxed{\frac{2}{m}
  \underbrace{\begin{bmatrix}
-     \sum_{i=0}^{m}\theta_0 + \theta_1x_i - y_i \\
-     \sum_{i=0}^{m}\theta_0x_i + \theta_1x_i^2 - x_iy_i
+     \sum_{i=0}^{m}\theta_1x_i + \theta_0 - y_i \\
+     \sum_{i=0}^{m}(x_i)(\theta_1x_i + \theta_0 - y_i)
  \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{X}\mathbf{\Theta} - \mathbf{X}^\intercal\mathbf{Y}} = 
 \begin{bmatrix}
      \frac{\partial\mathcal{L}}{\partial \theta_0} \\
@@ -193,7 +208,7 @@ $$
 \end{align}
 $$
 
-For a review of matrix calculus, Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] are both excellent resources. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
+Notice we recover the same answer as the scalar solution using partial differentiation and finite difference approximation, albeit in a more compact form. For a good introduction to matrix calculus, the textbook by Magnus & Neudecker (2007) [^4] is an excellent guide, of which Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] offer a review of important identities. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
 
 $$\begin{align}0 & = \mathbf X^\intercal \mathbf X \mathbf \Theta - \mathbf X ^ \intercal \mathbf Y \\\\ \mathbf \Theta &= (\mathbf X^\intercal \mathbf X)^{-1}\mathbf X^\intercal\mathbf Y \end{align}$$
 
@@ -208,3 +223,4 @@ TODO: Expand on AD graph
 [^1]: [Coppersmith–Winograd algorithm](https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm)
 [^2]: [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
 [^3]: [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/index.html)
+[^4]: [Matrix Differential Calculuswith Applications in Statisticsand Econometrics](https://www.amazon.ca/Differential-Calculus-Applications-Statistics-Econometrics/dp/1119541204)

@@ -75,15 +75,38 @@ Recall the matrix equation for linear regression, where $$\mathbf{X}: \mathbb{R}
  
 $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \mathbf{X}\mathbf{\Theta}$$
  
-Imagine we are given a training set $$\mathbf{X} = \{\mathbf{x}_0, \ldots, \mathbf{x}_m\}, \mathbf{Y} = \{\mathbf{y}_0, \ldots, \mathbf{y}_m\}$$. Our goal in OLS linear regression is to solve the following optimization problem:
+Imagine we are given the following dataset:
 
-$$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}||\mathbf{Y} - \mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta})||^2$$
+$$
+\mathbf{X} = 
+\begin{bmatrix}
+\mathbf{x}_0 \\
+\vdots \\
+\mathbf{x}_m
+\end{bmatrix} =
+\begin{pmatrix}
+1 & \ldots & x_{0n} \\
+\vdots & \ddots & \vdots \\
+1 & \ldots & x_{mn}
+\end{pmatrix}, 
+\mathbf{Y} = 
+\begin{bmatrix}
+y_0 \\
+\vdots \\
+y_m
+\end{bmatrix}$$
 
-First, we consider the scalar case $$\hat f: \mathbb{R} \times \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$$, where $$\hat f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$:
+Our goal in ordinary least squares (OLS) linear regression is to minimize the loss, or error between the data and the model's prediction:
+
+$$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta}) = ||\mathbf{Y} - \mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta})||^2$$
+
+$$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$
+
+First, we consider the scalar case, where $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \hat f(x; \theta_0, \theta_1) = \theta_0 x + \theta_1$$. Since $$\mathbf{X}, \mathbf{Y}$$ are considered to be fixed, we can rewrite $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$ as simply:
 
 $$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_0, \theta_1) = \frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2$$
 
-We would like to find $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) [the finite difference method](https://en.wikipedia.org/wiki/Finite_difference), and (2) symbolic differentiation. First, let's see the finite difference method with centered differences:
+To find the minimizer of $$\mathcal{L}(\mathbf{\Theta})$$, we need $$\nabla_\mathbf{\Theta}\mathcal{L} = \lbrack \frac{\partial\mathcal{L}}{\partial \theta_0}, \frac{\partial\mathcal{L}}{\partial \theta_1}\rbrack$$. There are various ways to compute this, of which we consider two: (1) [the finite difference method](https://en.wikipedia.org/wiki/Finite_difference) (FDM), and (2) symbolic differentiation. First, let's see FDM with centered differences:
 
 $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left((\theta_0 + h) x_i + \theta_1\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\left(\theta_0 + h\right) x_i + \theta_1\right)\right)^2 - \left(y_i - \left(\left(\theta_0 - h\right) x_i + \theta_1\right)\right)^2 \\\\ \frac{\partial\mathcal{L}}{\partial \theta_1} & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2}{2hm} \\\\ & = \underset{h \rightarrow 0}{\operatorname{lim}} \frac{1}{2hm}\sum_{i=0}^m\left(y_i - \left(\theta_0 x_i + \theta_1 + h\right)\right)^2 - \left(y_i - \left(\theta_0 x_i + \theta_1 - h\right)\right)^2\end{align}$$
 
@@ -93,7 +116,7 @@ $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \underset{h \ri
 
 Alternatively, we can calculate the partials analytically, by applying the chain rule:
 
-$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i^2 + \theta_1 x_i - y_i)}\end{align}$$
+$$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}{\partial \theta_0}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_0 x_i + \theta_1)) \frac{\partial}{\partial \theta_0}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_0 x_i + \theta_1 - y_i)}\end{align}$$
 
 $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2 (y_i - (\theta_0 x_i + \theta_1))\frac{\partial}{\partial \theta_1}(y_i - (\theta_0 x_i + \theta_1)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_0 x_i + \theta_1))(-1) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(\theta_0 x_i + \theta_1 - y_i)}\end{align}$$
 
@@ -105,15 +128,76 @@ Having reviewed the scalar procedure for linear regression, let us now return to
 
 $$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
 
-We can derive the gradient of the loss with respect to $$\mathbf \Theta$$ like so:
+Matrix notation allows us to derive the gradient without as much tedious algebra:
 
-$$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{m} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ & = \frac{2}{m} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)\end{align}$$
+$$\begin{align}\nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\nabla_{\mathbf{\Theta}}\mathbf Y^\intercal \mathbf Y - 2 \nabla_{\mathbf{\Theta}} \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \nabla_{\mathbf{\Theta}}\mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ & = \frac{1}{m} ( 0 - 2\mathbf{X}^\intercal \mathbf Y + 2 \mathbf{X}^\intercal \mathbf X \mathbf \Theta ) \\\\ \nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta}) & = \boxed{\frac{2}{m} (\mathbf{X}^\intercal \mathbf X \mathbf \Theta - \mathbf{X}^\intercal \mathbf Y)}\end{align}$$
+
+For completeness, and to convince ourselves the matrix solution is indeed the same:
+
+$$
+\begin{align}
+& = \frac{2}{m}\left(
+ \underbrace{\begin{bmatrix}
+    1 & \ldots & 1 \\
+    x_0 & \ldots & x_m \\
+ \end{bmatrix}}_{\mathbf{X}^\intercal}
+ \underbrace{\begin{bmatrix}
+    1 & x_0 \\
+    \vdots & \vdots \\
+    1 & x_m
+ \end{bmatrix}}_{\mathbf{X}}
+ \underbrace{\begin{bmatrix}
+     \theta_0 \\
+     \theta_1
+ \end{bmatrix}}_{\mathbf{\Theta}} - 
+ \underbrace{\begin{bmatrix}
+    1 & \ldots & 1 \\
+    x_0 & \ldots & x_m \\
+ \end{bmatrix}}_{\mathbf{X}^\intercal}
+  \underbrace{\begin{bmatrix}
+      y_0 \\
+      \vdots \\
+      y_m
+   \end{bmatrix}}_{\mathbf{Y}}\right) \\\\
+& = \frac{2}{m}\left(
+ \underbrace{\begin{bmatrix}
+    m & \sum_{i=0}^{m}x_i \\
+    \sum_{i=0}^{m}x_i & \sum_{i=0}^{m}x_i^2 \\
+ \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{X}}
+ \underbrace{\begin{bmatrix}
+     \theta_0 \\
+     \theta_1
+ \end{bmatrix}}_{\mathbf{\Theta}} - 
+ \underbrace{\begin{bmatrix}
+      \sum_{i=0}^{m}y_i \\
+      \sum_{i=0}^{m}x_iy_i
+   \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{Y}}\right) \\\\
+& = \frac{2}{m}\left(
+ \underbrace{\begin{bmatrix}
+     m \theta_0 + \sum_{i=0}^{m}\theta_1x_i \\
+     \sum_{i=0}^{m}\theta_0x_i + \sum_{i=0}^{m}\theta_1x_i^2
+ \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{X}\mathbf{\Theta}} - 
+ \underbrace{\begin{bmatrix}
+      \sum_{i=0}^{m}y_i \\
+      \sum_{i=0}^{m}x_iy_i
+   \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{Y}}\right) \\\\
+& = \boxed{\frac{2}{m}
+ \underbrace{\begin{bmatrix}
+     \sum_{i=0}^{m}\theta_0 + \theta_1x_i - y_i \\
+     \sum_{i=0}^{m}\theta_0x_i + \theta_1x_i^2 - x_iy_i
+ \end{bmatrix}}_{\mathbf{X}^\intercal\mathbf{X}\mathbf{\Theta} - \mathbf{X}^\intercal\mathbf{Y}} = 
+\begin{bmatrix}
+     \frac{\partial\mathcal{L}}{\partial \theta_0} \\
+     \frac{\partial\mathcal{L}}{\partial \theta_1}
+ \end{bmatrix} = \nabla_{\mathbf{\Theta}}\mathcal{L}(\mathbf{\Theta})}
+\end{align}
+$$
 
 For a review of matrix calculus, Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] are both excellent resources. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
 
 $$\begin{align}0 & = \mathbf X^\intercal \mathbf X \mathbf \Theta - \mathbf X ^ \intercal \mathbf Y \\\\ \mathbf \Theta &= (\mathbf X^\intercal \mathbf X)^{-1}\mathbf X^\intercal\mathbf Y \end{align}$$
 
-However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is at least $$\mathcal{O}(n^{2.373})$$[^1] to the best of our knowledge, i.e. quadratic with respect to the number of input dimensions. Another way to find $$\mathbf \Theta^*$$ is by repeating the following procedure until convergence:
+However this requires computing $$(\mathbf{X}^\intercal\mathbf{X})^{-1}$$ which is at least $$\mathcal{O}(n^{2.373})$$[^1] to the best of our knowledge, i.e. quadratic with respect to the number of input dimensions. Another way to find $$\mathbf \Theta^*$$ is by initializing $$\mathbf{\Theta} \leftarrow \mathbf{0}$$ and repeating the following procedure until convergence:
 
 $$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_{\mathbf{\Theta}}\mathcal L(\mathbf{\Theta})$$
 
@@ -121,6 +205,6 @@ Typically, $$\alpha \in [0.001, 0.1]$$. Although hyperparameter tuning is requir
 
 TODO: Expand on AD graph
 
-[^1]: [Coppersmith–Winograd algorithm](https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm)  
+[^1]: [Coppersmith–Winograd algorithm](https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm)
 [^2]: [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
 [^3]: [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/index.html)

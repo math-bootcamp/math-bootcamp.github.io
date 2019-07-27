@@ -102,6 +102,8 @@ $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta}) = ||\mathbf{Y} - \mathbf{
 
 $$\mathbf{\Theta}^* = \underset{\mathbf{\Theta}}{\operatorname{argmin}}\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$
 
+#### Multivariable solution
+
 First, we consider the scalar case, where $$\mathbf{\hat f}(\mathbf{X}; \mathbf{\Theta}) = \hat f(x; \theta_1, \theta_0) = \theta_1 x + \theta_0$$. Since $$\mathbf{X}, \mathbf{Y}$$ are considered to be fixed, we can rewrite $$\mathcal{L}(\mathbf{X}, \mathbf{Y}; \mathbf{\Theta})$$ as simply:
 
 $$\mathcal{L}(\mathbf{\Theta}) = \mathcal{L}(\theta_1, \theta_0) = \frac{1}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))^2$$
@@ -126,7 +128,7 @@ $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_0} & = \frac{\partial}
 
 $$\begin{align}\frac{\partial\mathcal{L}}{\partial \theta_1} & = \frac{\partial}{\partial \theta_1}\frac{1}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))^2 \\\\ & = \frac{1}{m}\sum_{i=0}^m 2(y_i - (\theta_1 x_i + \theta_0)) \frac{\partial}{\partial \theta_1}(y_i - (\theta_1 x_i + \theta_0)) \\\\ & = \frac{2}{m}\sum_{i=0}^m(y_i - (\theta_1 x_i + \theta_0))(-x_i) \\\\ & = \boxed{\frac{2}{m}\sum_{i=0}^m(x_i)(\theta_1 x_i + \theta_0 - y_i)}\end{align}$$
 
-Notice how analytical differentiation gives us the same answer as the finite difference method (this is not by accident), with much less algebra. We can rewrite this gradient form, i.e. as a column vector of partials:
+Notice how analytical differentiation gives us the same answer as the finite difference method (this is not by accident), with much less algebra. We can rewrite these two solutions in gradient form, i.e. as a column vector of partial derivatives:
  
 $$
 \nabla_\mathbf{\Theta}\mathcal{L} =
@@ -139,6 +141,8 @@ $$
 \end{bmatrix}
 $$
  
+#### Matrix solutions
+
 Having reviewed the scalar procedure for linear regression, let us now return to the general form of $$\mathcal L(\mathbf{\Theta})$$. Matrix notation allows us to simplify the loss considerably:
 
 $$\begin{align}\mathcal L(\mathbf{\Theta}) & = \frac{1}{m} (\mathbf Y - \mathbf X \mathbf \Theta)^\intercal(\mathbf Y - \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - \mathbf Y^\intercal \mathbf X \mathbf \Theta - \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta) \\\\ &= \frac{1}{m} (\mathbf Y^\intercal \mathbf Y - 2 \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf Y + \mathbf \Theta^\intercal \mathbf X^\intercal \mathbf X \mathbf \Theta)\end{align}$$
@@ -208,7 +212,7 @@ $$
 \end{align}
 $$
 
-Notice we recover the same answer as the scalar solution using partial differentiation and finite difference approximation, albeit in a more compact form. For a good introduction to matrix calculus, the textbook by Magnus & Neudecker (2007) [^4] is an excellent guide, of which Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] offer a review of important identities. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
+Notice how we recover the same answer as the scalar solution using partial differentiation and finite difference approximation, albeit in a more compact form. For a good introduction to matrix calculus, the textbook by Magnus & Neudecker (2007) [^4] is an excellent guide, of which Petersen & Pedersen (2012) [^2] and Parr & Howard (2018) [^3] offer a review of important identities. If $$\mathbf X^\intercal \mathbf X$$ is invertible, i.e. full-rank, implies a unique solution $$\mathbf \Theta^*$$, which we can solve for directly by setting $$\nabla_{\mathbf{\Theta}}\mathcal{L} = 0$$:
 
 $$\begin{align}0 & = \mathbf X^\intercal \mathbf X \mathbf \Theta - \mathbf X ^ \intercal \mathbf Y \\\\ \mathbf \Theta &= (\mathbf X^\intercal \mathbf X)^{-1}\mathbf X^\intercal\mathbf Y \end{align}$$
 
@@ -218,9 +222,11 @@ $$\mathbf{\Theta}' \leftarrow \mathbf{\Theta} - \alpha \nabla_{\mathbf{\Theta}}\
 
 Typically, $$\alpha \in [0.001, 0.1]$$. Although hyperparameter tuning is required to find a suitable $$\alpha$$ (various improvements like [Nesterov momentum](http://mitliagkas.github.io/ift6085/ift-6085-lecture-6-notes.pdf) and [quasi-Newton methods](https://en.wikipedia.org/wiki/Quasi-Newton_method) also help to accelerate convergence), this procedure is guaranteed to be computationally more efficient than matrix inversion for sufficiently large $$m$$ and $$n$$. In practice, the normal equation is seldom used unless $$m$$ is very small.
 
+#### Automatic Differentiation
+
 TODO: Expand on AD graph
 
 [^1]: [Coppersmith–Winograd algorithm](https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm)
 [^2]: [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
 [^3]: [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/index.html)
-[^4]: [Matrix Differential Calculuswith Applications in Statisticsand Econometrics](https://www.amazon.ca/Differential-Calculus-Applications-Statistics-Econometrics/dp/1119541204)
+[^4]: [Matrix Differential Calculus with Applications in Statistics and Econometrics](https://www.amazon.ca/Differential-Calculus-Applications-Statistics-Econometrics/dp/1119541204)

@@ -46,7 +46,7 @@ In deep learning we are often concerned with continuous, differentiable function
 
 TODO: describe the simple hill climbing algorithm
 
-This algorithm is $$\mathcal{o}(c^n)$$ where $$n$$ is the input dimensionality. If we can assume differentiability, this algorithm is not particularly efficient, but offers a framework upon which we can make various improvements.
+This algorithm is $$\mathcal{O}(c^n)$$ where $$n$$ is the input dimensionality. If we can assume differentiability, this algorithm is not particularly efficient, but offers a framework upon which we can make various improvements.
 
 ## Calculating Gradients, Numerically
 
@@ -101,6 +101,14 @@ TODO: Examine how to implement these rules using operator overloading, computati
 ### Forward Mode and Backward Mode
  
 TODO: Introduce linear function chains, optimal Jacobian accumulation problem and some heuristic solutions. Demonstrate algorithmic complexity of forward and reverse accumulation where $$m >> n$$ and vis versa.
+
+Suppose we have a function $$\mathbf{F}(\mathbf{x}) = \mathbf{f}_k\circ\ldots\circ\mathbf{f}_0\circ\mathbf{x}$$, where $$\mathbf{f}_k: \mathbb{R}^m$$ and $$\mathbf{f}_0: \mathbb{R}^n$$. Using the chain rule, the Jacobian can be defined as: 
+
+$$
+\mathbf{J}_{\mathbf{F}} = \prod_{i=0}^k \mathbf{J}_{\mathbf{F}_i}
+$$
+
+Recall that matrix multiplication is associative. In which order should we evaluate this product to minimize the computational complexity? We consider two cases, $$m << n$$, and $$n << m$$.
 
 ### Linear Regression from an AD Perspective
  

@@ -102,13 +102,13 @@ TODO: Examine how to implement these rules using operator overloading, computati
  
 TODO: Introduce linear function chains, optimal Jacobian accumulation problem and some heuristic solutions. Demonstrate algorithmic complexity of forward and reverse accumulation where $$m >> n$$ and vis versa.
 
-Suppose we have a function $$\mathbf{F}(\mathbf{x}) = \mathbf{f}_k\circ\ldots\circ\mathbf{f}_0\circ\mathbf{x}$$, where $$\mathbf{f}_k: \mathbb{R}^m$$ and $$\mathbf{f}_0: \mathbb{R}^n$$. Using the chain rule, the Jacobian can be defined as: 
+Suppose we have a function $$\mathbf{F}(\mathbf{x}) = \mathbf{f}_k\circ\ldots\circ\mathbf{f}_0\circ\mathbf{x}$$, where $$\mathbf{f}_k: \mathbb{R}^m$$ and $$\mathbf{f}_0: \mathbb{R}^n$$. Using the chain rule for vector functions, the Jacobian can be defined as:
 
 $$
-\mathbf{J}_{\mathbf{F}} = \prod_{i=0}^k \mathbf{J}_{\mathbf{F}_i}
+\mathbf{J}_{\mathbf{F}} = \prod_{i=0}^k \mathbf{J}_{\mathbf{f}_i}
 $$
 
-Recall that matrix multiplication is associative. In which order should we evaluate this product to minimize the computational complexity? We consider two cases, $$m << n$$, and $$n << m$$.
+Recall that matrix multiplication is associative $$\left(\mathbf{J}_{\mathbf{f}_0}\left(\mathbf{J}_{\mathbf{f}_1}\mathbf{J}_{\mathbf{f}_2}\right)\right) = \left(\left(\mathbf{J}_{\mathbf{f}_0}\mathbf{J}_{\mathbf{f}_1}\right)\mathbf{J}_{\mathbf{f}_2}\right)$$. In which order should we evaluate this product in order to minimize the computational complexity? We consider two cases, where $$m << n$$, and $$n << m$$.
 
 ### Linear Regression from an AD Perspective
  
@@ -316,3 +316,4 @@ Typically, $$\alpha \in [0.001, 0.1]$$. Although hyperparameter tuning is requir
 [^3]: [The Matrix Calculus You Need For Deep Learning](https://explained.ai/matrix-calculus/index.html)
 [^4]: [Matrix Differential Calculus with Applications in Statistics and Econometrics](https://www.amazon.ca/Differential-Calculus-Applications-Statistics-Econometrics/dp/1119541204)
 [^5]: [Wengert's Numerical Method for Partial Derivatives, Orbit Determination, and Quasilinearization](https://apps.dtic.mil/dtic/tr/fulltext/u2/608287.pdf)
+[^6]: [Myia: A Differentiable Language for Deep Learning](http://on-demand.gputechconf.com/gtc/2018/presentation/s8441-myia-a-differentiable-language-for-deep-learning.pdf)

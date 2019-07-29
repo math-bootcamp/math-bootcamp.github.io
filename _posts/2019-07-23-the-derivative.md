@@ -32,17 +32,17 @@ While higher-order derivatives of scalar-valued functions are sometimes used in 
 
 ## Machine Learning and Gradients
 
-In machine learning, we care about _objective functions_ and how to optimize them, whether we are working with supervised, deep, reinforcement, ... learning. To optimize a function, we search for _optima_, or where $$\nabla f(\vec{x}) = 0$$ and the [second-derivative test](https://en.wikipedia.org/wiki/Derivative_test#Second_derivative_test_(single_variable)) has certain criteria.
+In machine learning, we care about _objective functions_ and how to optimize them, whether we are working with supervised, deep, reinforcement, ... learning. To optimize a function, we search for _optima_, or where $$\nabla f(\vec{x}) = \vec{0}$$ and the [second-derivative test](https://en.wikipedia.org/wiki/Derivative_test#Second_derivative_test_(single_variable)) has certain criteria.
 
 While generally, we cannot make the assumption our objective function is convex (which means that we cannot guarantee any local optima are globally optimal), we can still use gradients to find local minima (or maxima, depending on the problem formulation).
 
 This gives rise to algorithms like _gradient descent_ (or more popularly, its _stochastic_ cousin, SGD); since we know the gradient gives us the direction of fastest increase, we can take the opposite direction to minimize an objective.
 
-While blindly following first order gradients can get also us into trouble (saddles also have $$\nabla f(\vec{x}) = 0$$ just like optima, and unfortunately [are ubiquitous in nonconvex optimization](#TODO); while SGD is generally considered effective at escaping these regions, the dynamics of gradient descent algorithms is still an [active area of research](#TODO)), we defer these discussions to a later post.
+While blindly following first order gradients can get also us into trouble (saddles also have $$\nabla f(\vec{x}) = \vec{0}$$ just like optima, and unfortunately [are ubiquitous in nonconvex optimization](#TODO); while SGD is generally considered effective at escaping these regions, the dynamics of gradient descent algorithms is still an [active area of research](#TODO)), we defer these discussions to a later post.
 
 ## Hill climbing and local search
 
-In deep learning we are often concerned with continuous, differentiable functions. It is important to remember that many optimization problems are non-differentiable, but (perhaps surprisingly) we can still perform some form of [hill climbing](https://en.wikipedia.org/wiki/Hill_climbing), or local search procedure.
+In deep learning we are often concerned with continuous, differentiable functions. It is important to remember that many optimization problems are non-differentiable, but (perhaps surprisingly) we can still perform some form of [hill climbing](https://en.wikipedia.org/wiki/Hill_climbing), or iterated local search procedure.
 
 TODO: describe the simple hill climbing algorithm
 
@@ -62,7 +62,7 @@ $$ f'(a) \approx \lim_{h\rightarrow 0} \frac{f(a + h) - f(a)}{h} $$
 
 known as a _first-order divided difference_.
 
-Numerical differentiation (known as _differential quadrature_) are still the leading methods to solve partial differential equations (and are also used to calculate derivatives in your favorite graphing calculator!), they incur errors on an order of magnitude of $$h$$; first-order divided differences incur errors on the order of $$O(h)$$, and while improved methods such as symmetric divided difference can lower this, differential quadrature methods can be prone to floating point approximation errors and implementation efficiency issues.
+Numerical differentiation (known as _differential quadrature_) are still the leading methods to solve partial differential equations, however they incur errors on an order of magnitude of $$h$$. First-order divided differences incur errors on the order of $$O(h)$$, and while improved methods such as symmetric divided difference can lower this, differential quadrature methods can be prone to floating point approximation errors and implementation efficiency issues.
 
 ![](https://upload.wikimedia.org/wikipedia/commons/4/41/AbsoluteErrorNumericalDifferentiationExample.png)
 

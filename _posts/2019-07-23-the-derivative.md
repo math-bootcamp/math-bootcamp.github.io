@@ -88,12 +88,31 @@ The same notion which appears in the differential calculi can be applied in many
 
 We make the following two claims:
 
-1. Symbolic differentiation can be performed mechanically using by replacing the expressions on the left hand side with their right hand side equivalents. Doing so requires less computation the numerical method [described above](#calculating-gradients-numerically).
+1. Symbolic differentiation can be performed mechanically by replacing the expressions on the left hand side with their right hand side equivalents. This process often requires less computation than the numerical method [described above](#calculating-gradients-numerically).
 2. The same rules can be applied to functions whose inputs and outputs are vectors, with exactly the same algebraic semantics. Using matrix notation requires far less computation than elementwise scalar differentiation.
 
-Firstly, let us examine the first claim. A naïve implementation of the finite difference method requires at least two evaluations for each input on which we wish to compute the derivative. While algebraic methods can help to reduce the computation, it is often more efficient to derive a closed form analytical solution for the derivative at every input.
+Firstly, let us examine the first claim. A naïve implementation of the finite difference method requires at least two evaluations each time we wish to compute the derivative at a certain input. While algebraic rewriting can help to reduce the computation, but we are still left with the $$\lim_{h\rightarrow 0}$$. It is often more efficient to derive a closed form analytical solution for the derivative at every input.
 
-Secondly, partial differentiation of vector functions is a specific case of higher dimensional derivatives which are often more convenient to represent as a Jacobian matrix for evaluation. The matrix representation requires far less memory and computation than a naïve implementation which iteratively computes derivatives for each element of a vector function.
+Secondly, partial differentiation of vector functions is a specific case of higher dimensional derivatives which are often more convenient to represent as a matrix, or _Jacobian_, which is defined as follows: 
+
+$$
+\mathcal{J}_{\mathbf{f}} = 
+\begin{bmatrix}
+    \dfrac{\partial \mathbf{f}}{\partial x_1} & \cdots & \dfrac{\partial \mathbf{f}}{\partial x_m}
+\end{bmatrix} =
+\begin{bmatrix}
+    \dfrac{\partial f_1}{\partial x_1} & \cdots & \dfrac{\partial f_1}{\partial x_m}\\
+    \vdots & \ddots & \vdots\\
+    \dfrac{\partial f_n}{\partial x_1} & \cdots & \dfrac{\partial f_n}{\partial x_m} 
+\end{bmatrix} =
+\begin{bmatrix}
+    \nabla f_1 \\
+    \vdots \\
+    \nabla f_m
+\end{bmatrix}
+$$
+
+The matrix representation often requires far less memory and computation than a naïve implementation which iteratively computes derivatives for each element of a vector function.
 
 TODO: give an example
 
@@ -116,10 +135,10 @@ TODO: Introduce linear function chains, optimal Jacobian accumulation problem an
 Suppose we have a function $$\mathbf{F}(\mathbf{x}) = \mathbf{f}_k\circ\ldots\circ\mathbf{f}_0\circ\mathbf{x}$$, where $$\mathbf{f}_k: \mathbb{R}^m$$ and $$\mathbf{f}_0: \mathbb{R}^n$$. Using the chain rule for vector functions, the Jacobian can be defined as:
 
 $$
-\mathbf{J}_{\mathbf{F}} = \prod_{i=0}^k \mathbf{J}_{\mathbf{f}_i}
+\mathcal{J}_{\mathbf{F}} = \prod_{i=0}^k \mathcal{J}_{\mathbf{f}_i}
 $$
 
-Recall that matrix multiplication is associative $$\left(\mathbf{J}_{\mathbf{f}_0}\left(\mathbf{J}_{\mathbf{f}_1}\mathbf{J}_{\mathbf{f}_2}\right)\right) = \left(\left(\mathbf{J}_{\mathbf{f}_0}\mathbf{J}_{\mathbf{f}_1}\right)\mathbf{J}_{\mathbf{f}_2}\right)$$. In which order should we evaluate this product in order to minimize the computational complexity? We consider two cases, where $$m << n$$, and $$n << m$$.
+Recall that matrix multiplication is associative $$\left(\mathcal{J}_{\mathbf{f}_0}\left(\mathcal{J}_{\mathbf{f}_1}\mathcal{J}_{\mathbf{f}_2}\right)\right) = \left(\left(\mathcal{J}_{\mathbf{f}_0}\mathcal{J}_{\mathbf{f}_1}\right)\mathcal{J}_{\mathbf{f}_2}\right)$$. In which order should we evaluate this product in order to minimize the computational complexity? We consider two cases, where $$m << n$$, and $$n << m$$.
 
 ### Linear Regression from an AD Perspective
  

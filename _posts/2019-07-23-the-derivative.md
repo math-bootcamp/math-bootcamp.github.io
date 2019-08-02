@@ -78,13 +78,24 @@ In calculus, we are taught many rules for symbolic differentiation. These rules 
 
 $$
 \begin{align}
-\text{Sum rule: } & \boxed{\frac{d}{dx}(u + v) = \frac{du}{dx}+ \frac{dv}{dx}} \\\\
-\text{Product rule: } & \boxed{\frac{d}{dx}(uv) = \frac{du}{dx}v+ u\frac{dv}{dx}} \\\\
-\text{Chain rule: } & \boxed{\frac{d}{dx}(u \circ v) = \frac{du}{dv} \frac{dv}{dx}}
+    \text{Sum rule: } & \boxed{\frac{d}{dx}(u + v) = \frac{du}{dx}+ \frac{dv}{dx}} \\\\
+    \text{Product rule: } & \boxed{\frac{d}{dx}(uv) = \frac{du}{dx}v+ u\frac{dv}{dx}} \\\\
+    \text{Chain rule: } & \boxed{\frac{d}{dx}(u \circ v) = \frac{du}{dv} \frac{dv}{dx}}
 \end{align}
 $$
 
-TODO: Generalize to vector and matrix calculi.
+The same notion which appears in the differential calculi can be applied in many different contexts from [regular expressions](http://maveric.uwaterloo.ca/reports/1964_JACM_Brzozowski.pdf) to [λ-calculus](https://www.sciencedirect.com/science/article/pii/S030439750300392X) to [linear logic](https://arxiv.org/abs/1805.11813). In machine learning, we are chiefly interested in calculating derivatives for vector fields or some mechanical representation thereof. As long as a number system admits the standard arithmetic notation (addition, multiplication and their inverses), it is possible to symbolically derive an expression which, when evaluated at a point, will equate to the finite difference approximation.
+
+We make the following two claims:
+
+1. Symbolic differentiation can be performed mechanically using by replacing the expressions on the left hand side with their right hand side equivalents. Doing so requires less computation the numerical method [described above](#calculating-gradients-numerically).
+2. The same rules can be applied to functions whose inputs and outputs are vectors, with exactly the same algebraic semantics. Using matrix notation requires far less computation than elementwise scalar differentiation.
+
+Firstly, let us examine the first claim. A naïve implementation of the finite difference method requires at least two evaluations for each input on which we wish to compute the derivative. While algebraic methods can help to reduce the computation, it is often more efficient to derive a closed form analytical solution for the derivative at every input.
+
+Secondly, partial differentiation of vector functions is a specific case of higher dimensional derivatives which are often more convenient to represent as a Jacobian matrix for evaluation. The matrix representation requires far less memory and computation than a naïve implementation which iteratively computes derivatives for each element of a vector function.
+
+TODO: give an example
 
 ### The Chain Rule, Reexamined
 

@@ -42,11 +42,27 @@ While blindly following first order gradients can get also us into trouble (sadd
 
 ## Hill climbing and local search
 
-In deep learning we are often concerned with continuous, differentiable functions. It is important to remember that many optimization problems are non-differentiable, but (perhaps surprisingly) we can still perform some form of [hill climbing](https://en.wikipedia.org/wiki/Hill_climbing), or iterated local search procedure.
+In deep learning we are often concerned with continuous, differentiable functions. It is important to remember that many optimization problems are non-differentiable, but we can still perform some form of [hill climbing](https://en.wikipedia.org/wiki/Hill_climbing), or iterated local search procedure. Below is a naïve implementation of a hill climbing algorithm which tries perturbing each input by a positive, negative or zero value, and returns the input corresponding to the greatest response.
 
-TODO: describe the simple hill climbing algorithm
+```text
+fun search(P̂: ℝᵐ→ℝ, c: ℝ, g₀: ℝ, g₁: ℝ, …, gₘ₋₁: ℝ): ℝᵐ
+    if m = 1:
+        return argmax { P̂(g₀+c), P̂(g₀-c), P̂(g₀) }
+    
+    return argmax { P̂(g₀+c)◦search(P̂(g₀+c), c, g₁, …, gₘ₋₁),
+                    P̂(g₀-c)◦search(P̂(g₀-c), c, g₁, …, gₘ₋₁),
+                    P̂(g₀)◦search(P̂(g₀), c, g₁, …, gₘ₋₁) }
 
-This algorithm is $$\mathcal{O}(c^n)$$ where $$n$$ is the input dimensionality. If we can assume differentiability, this algorithm is not particularly efficient, but offers a framework upon which we can make various improvements.
+fun climb(P̂: ℝᵐ→ℝ, c: ℝ, g: ℝᵐ): ℝᵐ
+    Δ ← check(P̂, c, g)
+
+    if Δ = g:
+        return g
+
+    return climb(P̂, c, Δ)
+```
+
+The `search` algorithm is $$\mathcal{O}(3^m)$$ where $$m$$ is the input dimensionality. If `P̂` is differentiable, this algorithm is not particularly efficient, but offers a framework upon which we can make various improvements by assuming further structure on `P̂`.
 
 ## Calculating Gradients, Numerically
 
@@ -93,7 +109,7 @@ We make the following two claims:
 
 Firstly, let us examine the first claim. A naïve implementation of the finite difference method requires at least two evaluations each time we wish to compute the derivative at a certain input. While algebraic rewriting can help to reduce the computation, but we are still left with the $$\lim_{h\rightarrow 0}$$. It is often more efficient to derive a closed form analytical solution for the derivative at every input.
 
-Secondly, partial differentiation of vector functions is a specific case of higher dimensional derivatives which are often more convenient to represent as a matrix, or _Jacobian_, which is defined as follows: 
+Secondly, partial differentiation of vector functions is a specific case of higher dimensional derivatives that are often more convenient to represent as a matrix, or _Jacobian_, which is defined as follows: 
 
 $$
 \mathcal{J}_{\mathbf{f}} = 
